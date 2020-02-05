@@ -11,6 +11,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +26,8 @@ import com.mentorondemand.entity.TrainingData;
 import com.mentorondemand.entity.TrainingList;
 import com.mentorondemand.entity.User;
 import com.mentorondemand.entity.UserList;
+import com.mentorondemand.exception.GlobalException;
+import com.mentorondemand.exception.LoginException;
 import com.mentorondemand.facade.MentorSkillService;
 import com.mentorondemand.facade.MentorSlotService;
 import com.mentorondemand.facade.PaymentService;
@@ -40,8 +43,6 @@ public class AdminController {
 	private TrainingService trainingService;
 	@Autowired
 	private UserService userService;
-	//@Autowired
-	//private MentorSkillService skillService;
 	@Autowired
 	private MentorSlotService slotService;
 	@Autowired
@@ -72,7 +73,7 @@ public class AdminController {
 		model.addAttribute("roleId",user.getRoleId());
 		
 		TrainingList trainingList = this.trainingService.getPaymentInstallment();
-		
+			
 		List<TrainingData> trainingDataList = new ArrayList<TrainingData>();
 		TrainingData trainingData = null;
 		
@@ -133,7 +134,10 @@ public class AdminController {
 		User user1 = (User) session.getAttribute("user");
 		model.addAttribute("roleId",user1.getRoleId());
 		
-		this.userService.editUser(user);
+		boolean status = this.userService.editUser(user);
+		
+		if(!status)
+			throw new GlobalException("Profile updation failed!");
 		
 		User user2 = this.userService.getById(user.getId());
 		request.getSession().removeAttribute("user");
@@ -304,7 +308,7 @@ public class AdminController {
 		boolean status = this.techService.save(tech);
 		
 		if(!status)
-			return "redirect:/admin/add-tech";
+			throw new GlobalException("Technology insertion failed!");
 		
 		return "redirect:/admin/add-tech";
 	}
@@ -341,7 +345,7 @@ public class AdminController {
 		boolean status = this.techService.update(tech);
 		
 		if(!status)
-			return "redirect:/admin/view-tech";
+			throw new GlobalException("Tecgnology updation failed!");
 		
 		return "redirect:/admin/view-tech";
 	}
@@ -360,7 +364,7 @@ public class AdminController {
 		boolean status = this.techService.delete(techId);
 		
 		if(!status)
-			return "redirect:/admin/view-tech";
+			throw new GlobalException("Technology deletion failed!");
 		
 		return "redirect:/admin/view-tech";
 	}
@@ -438,10 +442,20 @@ public class AdminController {
 		model.addAttribute("training",training);
 		
 		boolean payStatus = this.payService.savePayment(payment);
-		boolean status = this.trainingService.paymentMethod(payment.getTrainingId(),payment.getPayment(),payment.getInstallmentStatus());
 		
-		if(!status && !payStatus)
-			return "redirect:/admin/home";
+		if(payStatus)
+		{
+			boolean status = this.trainingService.paymentMethod(payment.getTrainingId(),payment.getPayment(),payment.getInstallmentStatus());
+			
+			//transaction backtrack code is here
+			
+			if(!status)
+				throw new GlobalException("Payment method failed!");
+		}
+		else
+		{
+			throw new GlobalException("Payment failed!");
+		}
 		
 		return "redirect:/admin/home";
 	}
@@ -514,8 +528,25 @@ public class AdminController {
 		boolean userStatus = this.userService.getActiveStatus(userId, activate);
 		
 		if(!userStatus)
-			return "redirect:/admin/user";
+			throw new GlobalException("Activation updation failed!");
 		
 		return "redirect:/admin/user";
+	}
+	
+	//exception handling
+	@ExceptionHandler
+	public String handleGlobalException(GlobalException ex,Model model)
+	{
+		model.addAttribute("exception",ex);
+		
+		return "error";
+	}
+	
+	@ExceptionHandler
+	public String handleException(Exception ex, Model model)
+	{
+		model.addAttribute("exception", ex);
+		
+		return "error";
 	}
 }

@@ -6,6 +6,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.mentorondemand.entity.Login;
 import com.mentorondemand.entity.User;
+import com.mentorondemand.exception.GlobalException;
+import com.mentorondemand.exception.LoginException;
 import com.mentorondemand.service.SearchService;
 import com.mentorondemand.service.UserServiceImpl;
 
@@ -68,7 +71,8 @@ public class HomeController {
 		boolean status = this.user.save(user);
 		
 		if(!status)
-			return "redirect:/";
+			throw new GlobalException("Registration failed!");
+			//return "redirect:/";
 		
 		return "redirect:/signup";
     }
@@ -98,10 +102,19 @@ public class HomeController {
 	@RequestMapping(value="/login",method = RequestMethod.POST)
 	public String login(@ModelAttribute("login") Login login,HttpServletRequest request)
 	{
-		User user = this.user.getUserLoginDetail(login.getUsername(),login.getPassword());
+		User user = null;
+		
+		try
+		{
+			user = this.user.getUserLoginDetail(login.getUsername(),login.getPassword());
+		}
+		catch(Exception e)
+		{
+			user = null;
+		}
 		
 		if(user == null)
-			return "redirect:/signin";
+			throw new LoginException("User or password is invalid!");
 		
 		HttpSession session = request.getSession();
 		session.setAttribute("user",user);
@@ -114,6 +127,30 @@ public class HomeController {
 			return "redirect:/mentor/home";
 		
 		return "error";
-		//return "redirect:/student/home";
+	}
+	
+	//exception handling
+	@ExceptionHandler
+	public String handleLoginException(LoginException ex,Model model)
+	{
+		model.addAttribute("exception",ex);
+		
+		return "error";
+	}
+	
+	@ExceptionHandler
+	public String handleGlobalException(GlobalException ex,Model model)
+	{
+		model.addAttribute("exception",ex);
+		
+		return "error";
+	}
+	
+	@ExceptionHandler
+	public String handleException(Exception ex, Model model)
+	{
+		model.addAttribute("exception", ex);
+		
+		return "error";
 	}
 }

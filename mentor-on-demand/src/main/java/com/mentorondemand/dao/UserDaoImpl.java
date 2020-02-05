@@ -88,7 +88,7 @@ public class UserDaoImpl implements UserDao {
 	public User getUserLoginDetail(String username, String password) throws NoResultException {
 		
 		User user = (User) this.entity.createQuery("From User Where userName='"+username+"' And password='"+password+"' And isActive=1").getSingleResult();
-		
+		System.out.println("User : "+user);
 		return user;
 	}
 

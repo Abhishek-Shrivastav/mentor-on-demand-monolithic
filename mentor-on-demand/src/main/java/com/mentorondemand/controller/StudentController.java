@@ -9,6 +9,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +22,7 @@ import com.mentorondemand.entity.Training;
 import com.mentorondemand.entity.TrainingData;
 import com.mentorondemand.entity.TrainingList;
 import com.mentorondemand.entity.User;
+import com.mentorondemand.exception.GlobalException;
 import com.mentorondemand.facade.MentorSkillService;
 import com.mentorondemand.facade.MentorSlotService;
 import com.mentorondemand.facade.TechnologyService;
@@ -133,7 +135,7 @@ public class StudentController {
 		boolean status = this.trainingService.save(training);
 		
 		if(!status)
-			return "redirect:/student/training";
+			throw new GlobalException("Proposal sending failed!");
 		
 		return "redirect:/student/training";
 	}
@@ -166,7 +168,10 @@ public class StudentController {
 		User user1 = (User) session.getAttribute("user");
 		model.addAttribute("roleId",user1.getRoleId());
 		
-		this.userService.editUser(user);
+		boolean status = this.userService.editUser(user);
+		
+		if(!status)
+			throw new GlobalException("Profile updation failed!");
 		
 		User user2 = this.userService.getById(user.getId());
 		request.getSession().removeAttribute("user");
@@ -260,7 +265,7 @@ public class StudentController {
 		boolean status = this.trainingService.update(training1);
 		
 		if(!status)
-			return "redirect:/student/training";
+			throw new GlobalException("Payment failed!");
 		
 		return "redirect:/student/training";
 	}
@@ -275,8 +280,25 @@ public class StudentController {
 		boolean status = this.trainingService.update(training);
 		
 		if(!status)
-			return "redirect:/student/training";
+			throw new GlobalException("Rating updation failed!");
 		
 		return "redirect:/student/training";
+	}
+	
+	//exception handling
+	@ExceptionHandler
+	public String handleGlobalException(GlobalException ex,Model model)
+	{
+		model.addAttribute("exception",ex);
+		
+		return "error";
+	}
+	
+	@ExceptionHandler
+	public String handleException(Exception ex, Model model)
+	{
+		model.addAttribute("exception", ex);
+		
+		return "error";
 	}
 }

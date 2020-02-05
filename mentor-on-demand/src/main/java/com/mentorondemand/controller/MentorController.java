@@ -9,6 +9,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +30,7 @@ import com.mentorondemand.entity.Training;
 import com.mentorondemand.entity.TrainingData;
 import com.mentorondemand.entity.TrainingList;
 import com.mentorondemand.entity.User;
+import com.mentorondemand.exception.GlobalException;
 import com.mentorondemand.facade.MentorSkillService;
 import com.mentorondemand.facade.MentorSlotService;
 import com.mentorondemand.facade.PaymentService;
@@ -271,7 +273,10 @@ public class MentorController {
 		User user1 = (User) session.getAttribute("user");
 		model.addAttribute("roleId",user1.getRoleId());
 		
-		this.userService.editUser(user);
+		boolean status = this.userService.editUser(user);
+		
+		if(!status)
+			throw new GlobalException("Profile updation failed!");
 		
 		User user2 = this.userService.getById(user.getId());
 		request.getSession().removeAttribute("user");
@@ -361,7 +366,7 @@ public class MentorController {
 		boolean status = this.skillService.update(mentorSkill);
 		
 		if(!status)
-			return "redirect:/mentor/view-skill";
+			throw new GlobalException("Skill updation failed!");
 		
 		return "redirect:/mentor/view-skill";
 	}
@@ -380,7 +385,7 @@ public class MentorController {
 		boolean status = this.skillService.delete(deleteId);
 		
 		if(!status)
-			return "redirect:/mentor/view-skill";
+			throw new GlobalException("Skill deletion failed!");
 		
 		return "redirect:/mentor/view-skill";
 	}
@@ -428,7 +433,7 @@ public class MentorController {
 		boolean status = this.skillService.save(mentorSkill);
 		
 		if(!status)
-			return "redirect:/mentor/add-skill";
+			throw new GlobalException("Skill insertion failed!");
 		
 		return "redirect:/mentor/add-skill";
 	}
@@ -507,7 +512,7 @@ public class MentorController {
 		boolean status = this.slotService.save(slot);
 		
 		if(!status)
-			return "redirect:/mentor/add-slot";
+			throw new GlobalException("Slot insertion failed!");
 		
 		return "redirect:/mentor/add-slot";
 	}
@@ -526,7 +531,7 @@ public class MentorController {
 		boolean status = this.slotService.activeSlot(slotId,activeId);
 		
 		if(!status)
-			return "redirect:/mentor/view-slot";
+			throw new GlobalException("Slot activation failed!");
 		
 		return "redirect:/mentor/view-slot";
 	}
@@ -545,7 +550,7 @@ public class MentorController {
 		boolean status = this.slotService.delete(slotId);
 		
 		if(!status)
-			return "redirect:/mentor/view-slot";
+			throw new GlobalException("Slot deletion failed!");
 		
 		return "redirect:/mentor/view-slot";
 	}
@@ -616,7 +621,7 @@ public class MentorController {
 		boolean status = this.trainingService.acceptTraining(training);
 		
 		if(!status)
-			return "redirect:/mentor/request";
+			throw new GlobalException("Request acceptation failed!");
 		
 		return "redirect:/mentor/request";
 	}
@@ -635,7 +640,7 @@ public class MentorController {
 		boolean status = this.trainingService.userRequest(trainingId,1);
 		
 		if(!status)
-			return "redirect:/mentor/request";
+			throw new GlobalException("Request declination failed!");
 		
 		return "redirect:/mentor/request";
 	}
@@ -676,7 +681,7 @@ public class MentorController {
 		boolean status = this.trainingService.progressUpgrade(training);
 		
 		if(!status)
-			return "redirect:/mentor/running";
+			throw new GlobalException("Progress upgradation failed!");
 		
 		return "redirect:/mentor/running";
 	}
@@ -695,7 +700,7 @@ public class MentorController {
 		boolean status = this.trainingService.userRequest(trainingId,4);
 		
 		if(!status)
-			return "redirect:/mentor/running";
+			throw new GlobalException("Training complete status updation failed!");
 		
 		return "redirect:/mentor/running";
 	}
@@ -722,5 +727,22 @@ public class MentorController {
 		model.addAttribute("payList",payList);
 		
 		return "running-payment";
+	}
+	
+	//exception handling
+	@ExceptionHandler
+	public String handleGlobalException(GlobalException ex,Model model)
+	{
+		model.addAttribute("exception",ex);
+		
+		return "error";
+	}
+	
+	@ExceptionHandler
+	public String handleException(Exception ex, Model model)
+	{
+		model.addAttribute("exception", ex);
+		
+		return "error";
 	}
 }

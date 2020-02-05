@@ -58,8 +58,8 @@
 						<tr>
 							<td>Experince Year : </td>
 							<td>
-								<form:select path="yearOfExp" required="true">
-									<form:option value="">-- Select --</form:option>
+								<form:select path="yearOfExp">
+									<form:option value="0">-- Select --</form:option>
 									<form:option value="1">1</form:option>
 									<form:option value="2">2</form:option>
 									<form:option value="3">3</form:option>
