@@ -1,0 +1,88 @@
+body
+{
+	text-align: center;
+	margin: 0;
+}
+.outer
+{
+	width: 100%;
+	height: 500px;
+	margin: 0 auto;
+	/*background-color: blue;*/
+}
+.header
+{
+	width:100%;
+	height:100px;
+	background-color: yellow;
+	float: left;
+}
+.menu
+{
+	width:100%;
+	height:50px;
+	background-color: green;
+	float: left;
+}
+.search
+{
+	width: 50%;
+	margin-top: 15px;
+	float: left;
+}
+.log
+{
+	width: 50%;
+	margin-top: 15px;
+	float: left;
+}
+.logmenu
+{
+	width: 100%;
+	margin-top: 15px;
+	float: left;
+}
+.sidebar	
+{
+	width:15%;
+	float: left;
+}
+.scrollit
+{
+	width:100%;
+	overflow-y:scroll;
+	height:180px;
+}
+.main1
+{
+	width:85%;
+	background-color: aqua;
+	float: left;
+}
+.main
+{
+	width:100%;
+	background-color: aqua;
+	float: left;
+}
+.list
+{
+	width:90%;
+	margin:30px auto;
+}
+.item
+{
+	width:100%;
+	border:solid 1px #000;
+}
+.footer
+{
+	width:100%;
+	height:100px;
+	background-color:black;
+	float: left;
+}
+.footer h5
+{
+	color: white;
+}
