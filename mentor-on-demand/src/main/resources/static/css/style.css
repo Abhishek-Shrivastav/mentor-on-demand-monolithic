@@ -42,6 +42,20 @@ body
 	margin-top: 15px;
 	float: left;
 }
+.public-status
+{
+	background-color:green;
+	text-decoration:none;
+	color:white;
+	font-weight:bold;
+}
+.protected-status
+{
+	background-color:red;
+	text-decoration:none;
+	color:white;
+	font-weight:bold;
+}
 .sidebar	
 {
 	width:15%;
@@ -85,4 +99,30 @@ body
 .footer h5
 {
 	color: white;
+}
+.form-error
+{
+	color:red;
+}
+table
+{
+	text-align: left;
+	position: relative;
+	border-collapse: collapse; 
+}
+th, td
+{
+	padding: 0.25rem;
+}
+tr.header-fix th
+{
+	background:aqua;
+	color:black;
+}
+th
+{
+	background: white;
+	position: sticky;
+	top: 0;
+	box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
 }

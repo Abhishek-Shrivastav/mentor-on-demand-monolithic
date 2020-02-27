@@ -34,10 +34,12 @@
 			<jsp:include page="admin-menu.jsp"/>
 		</div>
 		<div class="main">
-			<h2>Payment Panel</h2>
+			<h3 style="text-align:right; padding-right:80px; margin-bottom:0px">${firstName}</h3>
+			<h2 style="margin:0px;">Payment Panel</h2>
 			<div class="list">
+				<div class="item" style="overflow:scroll; height:315px;">
 					<table align="center" border="1" width="100%" cellpadding="2">
-						<tr>
+						<tr class="header-fix">
 							<th>ID</th>
 							<th>MENTOR-NAME</th>
 							<th>STUDENT-NAME</th>
@@ -53,9 +55,6 @@
 							<th>STATUS</th>
 							<th>PAY</th>
 						</tr>
-					</table>
-				<div class="item" style="overflow:scroll; height:315px;">
-					<table align="center" border="1" width="100%" cellpadding="2">
 						<c:if test="${not empty training}">
 						<c:set var="i" value="0"/>
 						<tr>
@@ -80,22 +79,6 @@
 								<td colspan="14">Empty list</td>
 							</tr>
 						</c:if>
-						<tr>
-							<th>ID</th>
-							<th>MENTOR-NAME</th>
-							<th>STUDENT-NAME</th>
-							<th>SLOT-TIME-FROM</th>
-							<th>SLOT-TIME-TO</th>
-							<th>TECHNOLOGY</th>
-							<th>PROGRESS</th>
-							<th>START-DATE</th>
-							<th>END-DATE</th>
-							<th>AMMOUNT-RECIVED</th>
-							<th>INSTALLMENT-STATUS</th>
-							<th>RATING</th>
-							<th>STATUS</th>
-							<th>PAY</th>
-						</tr>
 					</table>
 				</div>
 			</div>

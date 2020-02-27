@@ -1,5 +1,7 @@
 package com.mentorondemand.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -72,5 +74,13 @@ public class MentorSkillServiceImpl implements MentorSkillService {
 	public Boolean updateAvgSkill(Integer mentorId, Integer techId, Double avgRating) {
 		
 		return this.dao.updateAvgSkill(mentorId, techId, avgRating);
+	}
+
+	@Override
+	public List<Integer> getAllUniqueSkill() {
+		
+		List<Integer> list = this.dao.getAllUniqueSkill();
+
+		return list;
 	}
 }

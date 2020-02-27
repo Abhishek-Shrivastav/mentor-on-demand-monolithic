@@ -37,7 +37,8 @@
 			<jsp:include page="left-sidebar-menu4.jsp"/>
 		</div>
 		<div class="main1">
-			<h2>Edit Technology</h2>
+			<h3 style="text-align:right; padding-right:80px; margin-bottom:0px">${firstName}</h3>
+			<h2 style="margin:0px;">Edit Technology</h2>
 			<div class="list">
 				<div class="item">
 					<table align="center" width="40%" cellpadding="2">
@@ -53,7 +54,7 @@
 							<td colspan="2"><form:hidden  path="isActive" readonly="true" value="1" required="true"/></td>
 						</tr>
 						<tr>
-							<td colspan="2"><input type="submit" name="add" value="Insert"/></td>
+							<td colspan="2" style="text-align:center;"><input type="submit" name="add" value="Insert"/></td>
 						</tr>
 						</form:form>
 					</table>

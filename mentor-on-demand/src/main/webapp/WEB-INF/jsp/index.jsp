@@ -31,9 +31,9 @@
 				<form action="search" method="get">
 					<select name="techId" required="required">
 						<option value="" disabled="disabled" selected="selected">-- Select --</option>
-						<option value="1">C</option>
-						<option value="2">JAVA</option>
-						<option value="3">SPRING</option>
+						<c:forEach var="list" items="${techList}">
+							<option value="${list.id}">${list.technologyName}</option>
+						</c:forEach>
 					</select>
 					<input type="submit" name="submit" />
 				</form>
@@ -42,11 +42,12 @@
 			<jsp:include page="menu.jsp"/>
 			</c:if>
 			<c:if test="${roleId == 2}">
-			<jsp:include page="left-sidebar-menu7.jsp"/>
+			<jsp:include page="student-menu.jsp"/>
 			</c:if>
 		</div>
+		<c:if test="${roleId == 2}">
 		<div class="sidebar" align="center">
-			<c:if test="${roleId == 2}">
+			
 			<h4>Notification Bar</h4>
 			<div class="scrollit">
 			<table align="center" cellpadding="2">
@@ -71,13 +72,22 @@
 				</c:if>
 			</table>
 			</div>
-			</c:if>
+			
 		</div>
+		</c:if>
+		<c:if test="${roleId == 2}">
 		<div class="main1">
-			<h2>Search Mentor</h2>
+		</c:if>
+		<c:if test="${roleId != 2}">
+		<div class="main">
+		</c:if>
+			<h3 style="text-align:right; padding-right:80px; margin-bottom:0px">${firstName}</h3>
+			<h2 style="margin:0px;">Search Mentor</h2>
 			<div class="list">
+				<div class="item" style="overflow:scroll; height:315px;">
 					<table align="center" border="2" width="100%" cellpadding="2">
-						<tr>
+						<thead>
+						<tr class="header-fix">
 							<th>SNO</th>
 							<th>MENTOR-NAME</th>
 							<th>TECH-NAME</th>
@@ -87,15 +97,13 @@
 							<th>TOC</th>
 							<th>PREREQUISTES</th>
 							<th>FEE</th>
-							<th>TIME-FROM</th>
-							<th>TIME-TO</th>
 							<c:if test="${roleId == 2}">
-							<th>PROPOSE</th>
+							<th>CALENDAR</th>
 							</c:if>
 						</tr>
-					</table>
-				<div class="item" style="overflow:scroll; height:315px;">
-					<table align="center" border="2" width="100%" cellpadding="2">
+						</thead>
+						<tbody>
+						<c:if test="${not empty search}">
 						<c:set var="i" value="0"/>
 						<c:forEach var="list" items="${search}">
 						<tr>
@@ -103,34 +111,23 @@
 							<td>${list.mentorFirstName} ${list.mentorLastName}</td>
 							<td>${list.techName}</td>
 							<td>${list.linkedInUrl}</td>
-							<td>${list.yearExp}</td>
-							<td>${list.avgRating}</td>
+							<td width="30">${list.yearExp}</td>
+							<td width="30">${list.avgRating}</td>
 							<td>${list.toc}</td>
-							<td>${list.prerequisites}</td>
+							<td width="30">${list.prerequisites}</td>
 							<td>${list.fee}</td>
-							<td>${list.timeFrom}</td>
-							<td>${list.timeTo}</td>
 							<c:if test="${roleId == 2}">
-							<td><a href="/student/send-proposal/${list.mentorId}/${userId}/${list.slotId}/${list.techId}" onclick="return proposed();">Propose</a></td>
+							<td><a href="/student/view-calendar/${list.mentorId}/${userId}/${list.techId}">View</a></td>
 							</c:if>
 						</tr>
 						</c:forEach>
-						<tr>
-							<th>SNO</th>
-							<th>MENTOR-NAME</th>
-							<th>TECH-NAME</th>
-							<th>LINKED-IN</th>
-							<th>YEAR-EXP</th>
-							<th>RATING</th>
-							<th>TOC</th>
-							<th>PREREQUISTES</th>
-							<th>FEE</th>
-							<th>TIME-FROM</th>
-							<th>TIME-TO</th>
-							<c:if test="${roleId == 2}">
-							<th>PROPOSE</th>
-							</c:if>
-						</tr>
+						</c:if>
+						<c:if test="${empty search}">
+							<tr>
+								<td colspan="10" style="text-align:center;">Search result is empty.</td>
+							</tr>
+						</c:if>
+						</tbody>
 					</table>
 				</div>
 			</div>

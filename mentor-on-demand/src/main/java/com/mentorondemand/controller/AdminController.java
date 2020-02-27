@@ -1,17 +1,21 @@
 package com.mentorondemand.controller;
 
+import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,9 +30,8 @@ import com.mentorondemand.entity.TrainingData;
 import com.mentorondemand.entity.TrainingList;
 import com.mentorondemand.entity.User;
 import com.mentorondemand.entity.UserList;
+import com.mentorondemand.entity.UserProfile;
 import com.mentorondemand.exception.GlobalException;
-import com.mentorondemand.exception.LoginException;
-import com.mentorondemand.facade.MentorSkillService;
 import com.mentorondemand.facade.MentorSlotService;
 import com.mentorondemand.facade.PaymentService;
 import com.mentorondemand.facade.TechnologyService;
@@ -50,30 +53,16 @@ public class AdminController {
 	@Autowired
 	private PaymentService payService;
 	
-	//logout
-	@RequestMapping("/logout")
-	public String logout(HttpServletRequest request)
-	{
-		HttpSession session = request.getSession();
-		session.invalidate();
-
-		return "redirect:/signin";
-	}
-	
 	//default home
 	@RequestMapping("/home")
-	public String home(Model model,HttpServletRequest request)
+	public String home(Model model,Principal principal)
 	{
-		HttpSession session = request.getSession(false);
-		if(session.getAttribute("user") == null)
-		{
-			return "redirect:/admin/logout";
-		}
-		User user = (User) session.getAttribute("user");
+		User user = this.userService.findByUsername(principal.getName());
 		model.addAttribute("roleId",user.getRoleId());
+		model.addAttribute("firstName",user.getFirstName()+" "+user.getLastName());
 		
 		TrainingList trainingList = this.trainingService.getPaymentInstallment();
-			
+		
 		List<TrainingData> trainingDataList = new ArrayList<TrainingData>();
 		TrainingData trainingData = null;
 		
@@ -108,55 +97,49 @@ public class AdminController {
 	
 	//edit profile
 	@RequestMapping("/edit-profile")
-	public String editProfile(Model model,HttpServletRequest request)
+	public String editProfile(Model model,Principal principal)
 	{
-		HttpSession session = request.getSession(false);
-		if(session.getAttribute("user") == null)
-		{
-			return "redirect:/admin/logout";
-		}
-		User user = (User) session.getAttribute("user");
+		User user = this.userService.findByUsername(principal.getName());
 		model.addAttribute("roleId",user.getRoleId());
-		
-		model.addAttribute("command",user);
+		model.addAttribute("users",user);
+		model.addAttribute("firstName",user.getFirstName()+" "+user.getLastName());
 		
 		return "admin-edit-profile";
 	}
 	
 	@RequestMapping(value="/update-profile",method = RequestMethod.POST)
-	public String updateProfile(@ModelAttribute("user") User user,HttpServletRequest request,Model model)
+	public String updateProfile(@Valid @ModelAttribute("users") UserProfile user,BindingResult result,Model model,Principal principal)
 	{
-		HttpSession session = request.getSession(false);
-		if(session.getAttribute("user") == null)
-		{
-			return "redirect:/admin/logout";
-		}
-		User user1 = (User) session.getAttribute("user");
+		User user1 = this.userService.findByUsername(principal.getName());
 		model.addAttribute("roleId",user1.getRoleId());
+		model.addAttribute("firstName",user1.getFirstName()+" "+user1.getLastName());
 		
-		boolean status = this.userService.editUser(user);
+		if(result.hasErrors())
+		{
+			return "admin-edit-profile";
+		}
+		
+		User user2 = this.userService.getById(user.getId());
+		user2.setFirstName(user.getFirstName());
+		user2.setLastName(user.getLastName());
+		user2.setContact(user.getContact());
+		user2.setLinkedInUrl(user.getLinkedInUrl());
+		
+		boolean status = this.userService.editUser(user2);
 		
 		if(!status)
 			throw new GlobalException("Profile updation failed!");
-		
-		User user2 = this.userService.getById(user.getId());
-		request.getSession().removeAttribute("user");
-		request.getSession().setAttribute("user",user2);
 		
 		return "redirect:/admin/edit-profile";
 	}
 	
 	//training section
 	@RequestMapping("/training")
-	public String training(Model model,HttpServletRequest request)
+	public String training(Model model,Principal principal)
 	{
-		HttpSession session = request.getSession(false);
-		if(session.getAttribute("user") == null)
-		{
-			return "redirect:/admin/logout";
-		}
-		User user = (User) session.getAttribute("user");
+		User user = this.userService.findByUsername(principal.getName());
 		model.addAttribute("roleId",user.getRoleId());
+		model.addAttribute("firstName",user.getFirstName()+" "+user.getLastName());
 		
 		TrainingList trainingList = this.trainingService.getAll();
 		
@@ -193,17 +176,13 @@ public class AdminController {
 	}
 	
 	@RequestMapping("/running")
-	public String runningTraining(Model model,HttpServletRequest request)
+	public String runningTraining(Model model,Principal principal)
 	{
-		HttpSession session = request.getSession(false);
-		if(session.getAttribute("user") == null)
-		{
-			return "redirect:/admin/logout";
-		}
-		User user = (User) session.getAttribute("user");
+		User user = this.userService.findByUsername(principal.getName());
 		model.addAttribute("roleId",user.getRoleId());
+		model.addAttribute("firstName",user.getFirstName()+" "+user.getLastName());
 		
-		TrainingList trainingList = this.trainingService.getActionTraining(3);
+		TrainingList trainingList = this.trainingService.getRunningTraining(3);
 		
 		List<TrainingData> trainingDataList = new ArrayList<TrainingData>();
 		TrainingData trainingData = null;
@@ -227,17 +206,13 @@ public class AdminController {
 	}
 	
 	@RequestMapping("/complete")
-	public String completeTraining(Model model,HttpServletRequest request)
+	public String completeTraining(Model model,Principal principal)
 	{
-		HttpSession session = request.getSession(false);
-		if(session.getAttribute("user") == null)
-		{
-			return "redirect:/admin/logout";
-		}
-		User user = (User) session.getAttribute("user");
+		User user = this.userService.findByUsername(principal.getName());
 		model.addAttribute("roleId",user.getRoleId());
+		model.addAttribute("firstName",user.getFirstName()+" "+user.getLastName());
 		
-		TrainingList trainingList = this.trainingService.getActionTraining(4);
+		TrainingList trainingList = this.trainingService.getRunningTraining(4);
 		
 		List<TrainingData> trainingDataList = new ArrayList<TrainingData>();
 		TrainingData trainingData = null;
@@ -262,15 +237,11 @@ public class AdminController {
 	
 	//technology section
 	@RequestMapping("/view-tech")
-	public String viewTech(Model model,HttpServletRequest request)
+	public String viewTech(Model model,Principal principal)
 	{
-		HttpSession session = request.getSession(false);
-		if(session.getAttribute("user") == null)
-		{
-			return "redirect:/admin/logout";
-		}
-		User user = (User) session.getAttribute("user");
+		User user = this.userService.findByUsername(principal.getName());
 		model.addAttribute("roleId",user.getRoleId());
+		model.addAttribute("firstName",user.getFirstName()+" "+user.getLastName());
 		
 		TechnologyList techList = this.techService.getAll();
 		model.addAttribute("techList",techList.getTechList());
@@ -279,15 +250,11 @@ public class AdminController {
 	}
 	
 	@RequestMapping("/add-tech")
-	public String addTech(Model model,HttpServletRequest request)
+	public String addTech(Model model,Principal principal)
 	{
-		HttpSession session = request.getSession(false);
-		if(session.getAttribute("user") == null)
-		{
-			return "redirect:/admin/logout";
-		}
-		User user = (User) session.getAttribute("user");
+		User user = this.userService.findByUsername(principal.getName());
 		model.addAttribute("roleId",user.getRoleId());
+		model.addAttribute("firstName",user.getFirstName()+" "+user.getLastName());
 		
 		model.addAttribute("command",new Technology());
 		
@@ -295,15 +262,11 @@ public class AdminController {
 	}
 	
 	@RequestMapping("/save-tech")
-	public String saveTech(@ModelAttribute("tech") Technology tech,HttpServletRequest request,Model model)
+	public String saveTech(@ModelAttribute("tech") Technology tech,Model model,Principal principal)
 	{
-		HttpSession session = request.getSession(false);
-		if(session.getAttribute("user") == null)
-		{
-			return "redirect:/admin/logout";
-		}
-		User user = (User) session.getAttribute("user");
+		User user = this.userService.findByUsername(principal.getName());
 		model.addAttribute("roleId",user.getRoleId());
+		model.addAttribute("firstName",user.getFirstName()+" "+user.getLastName());
 		
 		boolean status = this.techService.save(tech);
 		
@@ -314,15 +277,11 @@ public class AdminController {
 	}
 	
 	@RequestMapping("/edit-tech/{techId}")
-	public String editTech(@PathVariable("techId")Integer techId,Model model,HttpServletRequest request)
+	public String editTech(@PathVariable("techId")Integer techId,Model model,Principal principal)
 	{
-		HttpSession session = request.getSession(false);
-		if(session.getAttribute("user") == null)
-		{
-			return "redirect:/admin/logout";
-		}
-		User user = (User) session.getAttribute("user");
+		User user = this.userService.findByUsername(principal.getName());
 		model.addAttribute("roleId",user.getRoleId());
+		model.addAttribute("firstName",user.getFirstName()+" "+user.getLastName());
 		
 		Technology tech = this.techService.getById(techId);
 		
@@ -332,15 +291,11 @@ public class AdminController {
 	}
 	
 	@RequestMapping("/update-tech")
-	public String updateTech(@ModelAttribute("tech") Technology tech,HttpServletRequest request,Model model)
+	public String updateTech(@ModelAttribute("tech") Technology tech,Model model,Principal principal)
 	{
-		HttpSession session = request.getSession(false);
-		if(session.getAttribute("user") == null)
-		{
-			return "redirect:/admin/logout";
-		}
-		User user = (User) session.getAttribute("user");
+		User user = this.userService.findByUsername(principal.getName());
 		model.addAttribute("roleId",user.getRoleId());
+		model.addAttribute("firstName",user.getFirstName()+" "+user.getLastName());
 		
 		boolean status = this.techService.update(tech);
 		
@@ -351,15 +306,11 @@ public class AdminController {
 	}
 	
 	@RequestMapping("/delete-tech/{techId}")
-	public String deleteTech(@PathVariable("techId")Integer techId,Model model,HttpServletRequest request)
+	public String deleteTech(@PathVariable("techId")Integer techId,Model model,Principal principal)
 	{
-		HttpSession session = request.getSession(false);
-		if(session.getAttribute("user") == null)
-		{
-			return "redirect:/admin/logout";
-		}
-		User user = (User) session.getAttribute("user");
+		User user = this.userService.findByUsername(principal.getName());
 		model.addAttribute("roleId",user.getRoleId());
+		model.addAttribute("firstName",user.getFirstName()+" "+user.getLastName());
 		
 		boolean status = this.techService.delete(techId);
 		
@@ -371,15 +322,11 @@ public class AdminController {
 	
 	//fee payment
 	@RequestMapping("/payment/{trainingId}")
-	public String paymentTable(@PathVariable("trainingId") Integer id,Model model,HttpServletRequest request)
+	public String paymentTable(@PathVariable("trainingId") Integer id,Model model,Principal principal)
 	{
-		HttpSession session = request.getSession(false);
-		if(session.getAttribute("user") == null)
-		{
-			return "redirect:/admin/logout";
-		}
-		User user = (User) session.getAttribute("user");
+		User user = this.userService.findByUsername(principal.getName());
 		model.addAttribute("roleId",user.getRoleId());
+		model.addAttribute("firstName",user.getFirstName()+" "+user.getLastName());
 		
 		Training training = this.trainingService.getById(id);
 		
@@ -400,15 +347,11 @@ public class AdminController {
 	}
 	
 	@RequestMapping("/paypal/{trainingId}")
-	public String paypal(@PathVariable("trainingId") Integer id,Model model,HttpServletRequest request)
+	public String paypal(@PathVariable("trainingId") Integer id,Model model,Principal principal)
 	{
-		HttpSession session = request.getSession(false);
-		if(session.getAttribute("user") == null)
-		{
-			return "redirect:/admin/logout";
-		}
-		User user = (User) session.getAttribute("user");
+		User user = this.userService.findByUsername(principal.getName());
 		model.addAttribute("roleId",user.getRoleId());
+		model.addAttribute("firstName",user.getFirstName()+" "+user.getLastName());
 		
 		Training training = this.trainingService.getById(id);
 		model.addAttribute("training",training);
@@ -428,15 +371,11 @@ public class AdminController {
 	}
 	
 	@RequestMapping(value = "/pay",method = RequestMethod.POST)
-	public String payment(@ModelAttribute("payment") Payment payment,Model model,HttpServletRequest request)
+	public String payment(@ModelAttribute("payment") Payment payment,Model model,Principal principal)
 	{
-		HttpSession session = request.getSession(false);
-		if(session.getAttribute("user") == null)
-		{
-			return "redirect:/admin/logout";
-		}
-		User user = (User) session.getAttribute("user");
+		User user = this.userService.findByUsername(principal.getName());
 		model.addAttribute("roleId",user.getRoleId());
+		model.addAttribute("firstName",user.getFirstName()+" "+user.getLastName());
 		
 		Training training = this.trainingService.getById(payment.getTrainingId());
 		model.addAttribute("training",training);
@@ -461,15 +400,11 @@ public class AdminController {
 	}
 	
 	@RequestMapping("/running-payment")
-	public String runningPayment(Model model,HttpServletRequest request)
+	public String runningPayment(Model model,Principal principal)
 	{
-		HttpSession session = request.getSession(false);
-		if(session.getAttribute("user") == null)
-		{
-			return "redirect:/admin/logout";
-		}
-		User user = (User) session.getAttribute("user");
+		User user = this.userService.findByUsername(principal.getName());
 		model.addAttribute("roleId",user.getRoleId());
+		model.addAttribute("firstName",user.getFirstName()+" "+user.getLastName());
 		
 		PaymentList payList = this.payService.getAllPayment();
 		
@@ -479,15 +414,11 @@ public class AdminController {
 	}
 	
 	@RequestMapping("/complete-payment")
-	public String completePayment(Model model,HttpServletRequest request)
+	public String completePayment(Model model,Principal principal)
 	{
-		HttpSession session = request.getSession(false);
-		if(session.getAttribute("user") == null)
-		{
-			return "redirect:/admin/logout";
-		}
-		User user = (User) session.getAttribute("user");
+		User user = this.userService.findByUsername(principal.getName());
 		model.addAttribute("roleId",user.getRoleId());
+		model.addAttribute("firstName",user.getFirstName()+" "+user.getLastName());
 		
 		PaymentList payList = this.payService.getCompletePayment();
 		
@@ -498,15 +429,11 @@ public class AdminController {
 	
 	//user block/unblock section
 	@RequestMapping("/user")
-	public String user(Model model,HttpServletRequest request)
+	public String user(Model model,Principal principal)
 	{
-		HttpSession session = request.getSession(false);
-		if(session.getAttribute("user") == null)
-		{
-			return "redirect:/admin/logout";
-		}
-		User user = (User) session.getAttribute("user");
+		User user = this.userService.findByUsername(principal.getName());
 		model.addAttribute("roleId",user.getRoleId());
+		model.addAttribute("firstName",user.getFirstName()+" "+user.getLastName());
 		
 		UserList userList = this.userService.getAll();
 		model.addAttribute("userList",userList.getUserList());
@@ -515,15 +442,11 @@ public class AdminController {
 	}
 
 	@RequestMapping("/activate/{userId}/{activate}")
-	public String activation(@PathVariable("userId") Integer userId,@PathVariable("activate") Integer activate,Model model,HttpServletRequest request)
+	public String activation(@PathVariable("userId") Integer userId,@PathVariable("activate") Integer activate,Model model,Principal principal)
 	{
-		HttpSession session = request.getSession(false);
-		if(session.getAttribute("user") == null)
-		{
-			return "redirect:/admin/logout";
-		}
-		User user = (User) session.getAttribute("user");
+		User user = this.userService.findByUsername(principal.getName());
 		model.addAttribute("roleId",user.getRoleId());
+		model.addAttribute("firstName",user.getFirstName()+" "+user.getLastName());
 		
 		boolean userStatus = this.userService.getActiveStatus(userId, activate);
 		
@@ -548,5 +471,13 @@ public class AdminController {
 		model.addAttribute("exception", ex);
 		
 		return "error";
+	}
+	
+	//trimmer intercept request
+	@InitBinder
+	public void interceptRequest(WebDataBinder binder)
+	{
+		StringTrimmerEditor trimmer = new StringTrimmerEditor(true);
+		binder.registerCustomEditor(String.class, trimmer);
 	}
 }

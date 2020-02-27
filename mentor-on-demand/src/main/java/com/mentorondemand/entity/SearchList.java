@@ -4,22 +4,22 @@ import java.util.List;
 
 public class SearchList {
 
-	private List<Search> searchList;
-	private List<CountTraining> countTrainingList;
+	private List<SearchRequest> searchList;
+	private List<MentorSlot> mentorSlotList;
 
 	public SearchList() {}
 
-	public SearchList(List<Search> searchList,List<CountTraining> countTrainingList) {
+	public SearchList(List<SearchRequest> searchList,List<MentorSlot> mentorSlotList) {
 		
 		this.searchList = searchList;
-		this.countTrainingList = countTrainingList;
+		this.mentorSlotList = mentorSlotList;
 	}
 
-	public List<Search> getSearchList() {
+	public List<SearchRequest> getSearchList() {
 		return searchList;
 	}
 
-	public List<CountTraining> getCountTrainingList() {
-		return countTrainingList;
+	public List<MentorSlot> getMentorSlotList() {
+		return mentorSlotList;
 	}
 }

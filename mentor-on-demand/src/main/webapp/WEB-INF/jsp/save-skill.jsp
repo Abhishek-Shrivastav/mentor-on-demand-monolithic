@@ -13,7 +13,20 @@
 	<script type="text/javascript">
 		function save()
 		{
-			alert("Skill Saved!");
+			var tech = document.getElementById('technologyId').value;
+			var toc = document.getElementById('toc').value;
+			var prerequisite = document.getElementById('prerequisites').value;
+			var fee = document.getElementById('fee').value;
+			
+			if(tech == "" || toc == "" || prerequisite == "" || fee == "" ||)
+			{
+				return ture;
+			}
+			else
+			{
+				alert("Skill Saved!");
+				return true;
+			}
 		}
 	</script>
 </head>
@@ -37,11 +50,12 @@
 			<jsp:include page="left-sidebar-menu1.jsp"/>
 		</div>
 		<div class="main1">
-			<h2>Add Mentor-Skill Form</h2>
+			<h3 style="text-align:right; padding-right:80px; margin-bottom:0px">${firstName}</h3>
+			<h2 style="margin:0px;">Add Mentor-Skill Form</h2>
 			<div class="list">
 				<div class="item">
 					<table align="center" width="40%" cellpadding="2">
-						<form:form method="post" action="save-skill" onsubmit="save()">
+						<form:form method="post" action="save-skill" modelAttribute="mentoSkill" onsubmit="return save();">
 						<tr>
 							<td></td>
 							<td><form:hidden  path="mentorId" readonly="true" value="${mentorId}" required="true"/></td>
@@ -49,13 +63,14 @@
 						<tr>
 							<td>Technology : </td>
 							<td>
-								<form:select path="technologyId" required="true">
-									<form:option value="" disabled="true" selected="true">-- Select --</form:option>
+								<form:select path="technologyId">
+									<form:option value="">-- Select --</form:option>
 								<c:forEach var="techList" items="${techList}">
 									<form:option value="${techList.id}">${techList.technologyName}</form:option>
 								</c:forEach>
 								</form:select>
 							</td>
+							<td><form:errors path="technologyId" cssClass="form-error"></form:errors></td>
 						</tr>
 						<tr>
 							<td></td>
@@ -63,18 +78,21 @@
 						</tr>
 						<tr>
 							<td>TOC : </td>
-							<td><form:input path="toc" placeholder="TOC" required="true"/></td>
+							<td><form:input path="toc" placeholder="TOC"/></td>
+							<td><form:errors path="toc" cssClass="form-error"></form:errors></td>
 						</tr>
 						<tr>
 							<td>Prerequisite : </td>
-							<td><form:input path="prerequisites" placeholder="Prerequisite" required="true"/></td>
+							<td><form:input path="prerequisites" placeholder="Prerequisite"/></td>
+							<td><form:errors path="prerequisites" cssClass="form-error"></form:errors></td>	
 						</tr>
 						<tr>
 							<td>Fee : </td>
-							<td><form:input path="fee" placeholder="Fee" required="true"/></td>
+							<td><form:input path="fee" placeholder="Fee"/></td>
+							<td><form:errors path="fee" cssClass="form-error"></form:errors></td>
 						</tr>
 						<tr>
-							<td colspan="2"><input type="submit" name="add" value="Insert" /></td>
+							<td colspan="2" style="text-align:center;"><input type="submit" name="add" value="Insert" /></td>
 						</tr>
 						</form:form>
 					</table>

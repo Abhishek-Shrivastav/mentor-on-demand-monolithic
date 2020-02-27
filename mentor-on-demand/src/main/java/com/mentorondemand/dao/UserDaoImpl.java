@@ -38,7 +38,6 @@ public class UserDaoImpl implements UserDao {
 
 	@Override
 	public boolean saveUser(User user) {
-		System.out.println("User inputs : "+user);
 		
 		this.entity.persist(user);
 		
@@ -78,7 +77,6 @@ public class UserDaoImpl implements UserDao {
 	@Override
 	public List<User> getUserByTechId(Integer id) {
 		
-		//User user = this.entity.find(User.class,id);
 		List<User> user = this.entity.createQuery("From User Where id="+id).getResultList();
 		
 		return user;
@@ -88,7 +86,7 @@ public class UserDaoImpl implements UserDao {
 	public User getUserLoginDetail(String username, String password) throws NoResultException {
 		
 		User user = (User) this.entity.createQuery("From User Where userName='"+username+"' And password='"+password+"' And isActive=1").getSingleResult();
-		System.out.println("User : "+user);
+
 		return user;
 	}
 
@@ -107,8 +105,6 @@ public class UserDaoImpl implements UserDao {
 	@Override
 	public boolean editUser(User user) {
 		
-		System.out.println(user);
-		
 		User userUpd = this.entity.find(User.class,user.getId());
 		
 		userUpd.setFirstName(user.getFirstName());
@@ -120,5 +116,59 @@ public class UserDaoImpl implements UserDao {
 		this.entity.flush();
 		
 		return true;
+	}
+
+	@Override
+	public boolean findUserByUsername(String username)
+	{
+		User user = null;
+		
+		try
+		{
+			user = (User) this.entity.createQuery("From User Where userName='"+username+"'").getSingleResult();
+		}
+		catch (Exception e)
+		{
+			user = null;
+		}
+		
+		if(user != null)
+			return true;
+			
+		return false;
+	}
+
+	@Override
+	public User findByUsername(String username)
+	{
+		User user = null;
+		
+		try
+		{
+			user = (User) this.entity.createQuery("From User Where userName='"+username+"' And isActive=1").getSingleResult();
+		}
+		catch (Exception e)
+		{
+			user = null;
+		}
+		
+		return user;
+	}
+
+	@Override
+	public User findByContact(String contact)
+	{
+		User user = null;
+		
+		try
+		{
+			user = (User) this.entity.createQuery("From User Where contact='"+contact+"'").getSingleResult();
+		}
+		catch (Exception e)
+		{
+			user = null;
+		}
+		
+		return user;
 	}
 }

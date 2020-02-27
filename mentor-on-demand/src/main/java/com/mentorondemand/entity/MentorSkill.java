@@ -6,6 +6,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "mentorskills")
@@ -17,14 +20,20 @@ public class MentorSkill {
 	private Integer id;
 	@Column(name = "mentor_id")
 	private Integer mentorId;
+	@NotNull(message = "Technology not provided!")
 	@Column(name = "technology_id")
 	private Integer technologyId;
 	@Column(name = "avg_rating")
 	private Double avgRating;
+	@NotNull(message = "TOC not provided!")
 	@Column(name = "toc")
 	private String toc;
+	@NotNull(message = "Prerequisite not provided!")
 	@Column(name = "prerequisites")
 	private String prerequisites;
+	@DecimalMin(value = "0.0",message = "Enter in valid number format!")
+	@DecimalMax(value = "100000.0", message = "Enter in valid number format!")
+	@NotNull(message = "Fee not provide!")
 	@Column(name = "fee")
 	private Double fee;
 	

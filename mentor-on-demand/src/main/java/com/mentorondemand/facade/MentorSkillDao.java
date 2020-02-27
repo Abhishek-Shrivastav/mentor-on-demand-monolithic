@@ -15,4 +15,5 @@ public interface MentorSkillDao {
 	List<MentorSkill> getMentorSkillById(Integer id);
 	public MentorSkill getSkillByMentorIdAndTechId(Integer mentorId,Integer techId);
 	boolean updateAvgSkill(Integer mentorId,Integer techId,Double avgRating);
+	List<Integer> getAllUniqueSkill();
 }

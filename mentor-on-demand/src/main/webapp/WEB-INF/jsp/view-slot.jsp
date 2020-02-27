@@ -41,10 +41,12 @@
 			<jsp:include page="left-sidebar-menu2.jsp"/>
 		</div>
 		<div class="main1">
-			<h2>Mentor Calendar List</h2>
+			<h3 style="text-align:right; padding-right:80px; margin-bottom:0px">${firstName}</h3>
+			<h2 style="margin:0px;">Mentor Calendar List</h2>
 			<div class="list">
+				<div class="item" style="overflow:scroll; height:315px;">
 					<table align="center" border="1" width="100%" cellpadding="2">
-						<tr>
+						<tr class="header-fix">
 							<th>ID</th>
 							<th>TIME-FROM</th>
 							<th>TIME-TO</th>
@@ -52,9 +54,6 @@
 							<th>ACTIVE</th>
 							<th>DELETE</th>
 						</tr>
-					</table>
-				<div class="item" style="overflow:scroll; height:315px;">
-					<table align="center" border="1" width="100%" cellpadding="2">
 						<c:if test="${not empty slotList}">
 						<c:set var="i" value="0"/>
 						<c:forEach var="slot" items="${slotList}">
@@ -62,7 +61,12 @@
 							<td><c:out value="${i=i+1}"/></td>
 							<td>${slot.timeFrom}</td>
 							<td>${slot.timeTo}</td>
-							<td>${slot.status}</td>
+							<c:if test="${slot.status == 'Protected'}">
+							<td><span class="protected-status">${slot.status}</span></td>
+							</c:if>
+							<c:if test="${slot.status == 'Public'}">
+							<td><span class="public-status">${slot.status}</span></td>
+							</c:if>
 							<c:if test="${slot.active == 'Active'}">
 								<td><a href="/mentor/active/${slot.id}/0">${slot.active}</a></td>
 							</c:if>
@@ -75,17 +79,9 @@
 						</c:if>
 						<c:if test="${empty slotList}">
 							<tr>
-								<td colspan="6">Empty list</td>
+								<td colspan="6" style="text-align:center;">Empty list</td>
 							</tr>
 						</c:if>
-						<tr>
-							<th>ID</th>
-							<th>TIME-FROM</th>
-							<th>TIME-TO</th>
-							<th>STATUS</th>
-							<th>ACTIVE</th>
-							<th>DELETE</th>
-						</tr>
 					</table>
 				</div>
 			</div>

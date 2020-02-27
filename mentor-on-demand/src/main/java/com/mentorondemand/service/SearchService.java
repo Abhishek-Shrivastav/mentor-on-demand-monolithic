@@ -4,32 +4,16 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
-import com.mentorondemand.entity.CountTraining;
-import com.mentorondemand.entity.CountTrainingObject;
 import com.mentorondemand.entity.MentorSkill;
 import com.mentorondemand.entity.MentorSlot;
-import com.mentorondemand.entity.Search;
 import com.mentorondemand.entity.SearchList;
+import com.mentorondemand.entity.SearchRequest;
 import com.mentorondemand.entity.SkillList;
 import com.mentorondemand.entity.SlotList;
-import com.mentorondemand.entity.StatusResponse;
 import com.mentorondemand.entity.Technology;
-import com.mentorondemand.entity.TrainingStatusResponse;
 import com.mentorondemand.entity.User;
-import com.mentorondemand.service.MentorSkillServiceImpl;
-import com.mentorondemand.service.MentorSlotServiceImpl;
-import com.mentorondemand.service.TechnologyServiceImpl;
-import com.mentorondemand.service.TrainingServiceImpl;
-import com.mentorondemand.service.UserServiceImpl;
 
 @Service
 public class SearchService {
@@ -47,80 +31,109 @@ public class SearchService {
 	
 	public SearchList searchById(Integer techId)
 	{
-		List<Search> search = new LinkedList<Search>();
-		List<CountTraining> count = new LinkedList<CountTraining>();
+		List<SearchRequest> search = new LinkedList<SearchRequest>();
+		List<MentorSlot> mentorSlotList = new LinkedList<MentorSlot>();
 		
 		SkillList skillList = this.mentorSkill.getMentorSkillByTechId(techId);
 		
 		List<MentorSkill> skills = skillList.getListSkill();
-
-		for(MentorSkill skill : skills) {
-			
+		
+		for(MentorSkill skill : skills)
+		{
 			Technology tech = this.technology.getById(skill.getTechnologyId());
 			User user = this.user.getById(skill.getMentorId());
-			SlotList slotList = this.mentorSlot.getByMentorId(skill.getMentorId());
 			
-			List<MentorSlot> slots = slotList.getListSlot();
+			SlotList slotList = this.mentorSlot.getSearchByMentorId(skill.getMentorId());
 			
-			for(MentorSlot slot : slots) {
-				
-				boolean status = this.training.checkSlot(slot.getId());
-				
-				if(status)
+			boolean bool;
+			int cnt=0;
+			if(slotList.getListSlot().size() != 0)
+			{
+				for(MentorSlot slot : slotList.getListSlot())
 				{
-					search.add(new Search(user.getId(),user.getFirstName(),user.getLastName(),user.getYearOfExp(),user.getLinkedInUrl(),tech.getId(),tech.getTechnologyName(),skill.getId(),skill.getAvgRating(),skill.getToc(),skill.getPrerequisites(),skill.getFee(),slot.getId(),slot.getTimeFrom(),slot.getTimeTo()));
+					bool = this.training.checkSlot(slot.getId());
+					if(bool)
+					{
+						if(cnt==1)break;
+						
+						search.add(new SearchRequest(user.getId(),user.getFirstName(),user.getLastName(),user.getYearOfExp(),user.getLinkedInUrl(),tech.getId(),tech.getTechnologyName(),skill.getId(),skill.getAvgRating(),skill.getToc(),skill.getPrerequisites(),skill.getFee()));
+						cnt++;
+					}
 				}
 			}
 		}
 		
-		SearchList searchList = new SearchList(search,count);
-		System.out.println(searchList.getSearchList());
+		SearchList searchList = new SearchList(search,mentorSlotList);
 		
 		return searchList;
 	}
 	
 	public SearchList searchAll()
 	{
-		List<Search> search = new LinkedList<Search>();
-		List<CountTraining> count = new LinkedList<CountTraining>();
+		List<SearchRequest> search = new LinkedList<SearchRequest>();
+		List<MentorSlot> mentorSlotList = new LinkedList<MentorSlot>();
 		
 		SkillList skillList = this.mentorSkill.getAll();
 		
 		List<MentorSkill> skills = skillList.getListSkill();
-
-		for(MentorSkill skill : skills) {
-			
+		
+		for(MentorSkill skill : skills)
+		{
 			Technology tech = this.technology.getById(skill.getTechnologyId());
 			User user = this.user.getById(skill.getMentorId());
+			
 			SlotList slotList = this.mentorSlot.getSearchByMentorId(skill.getMentorId());
 			
-			List<MentorSlot> slots = slotList.getListSlot();
+			boolean bool=false;
+			int cnt=0;
 			
-			for(MentorSlot slot : slots) {
-				
-				boolean status = this.training.checkSlot(slot.getId());
-				
-				if(status)
+			if(slotList.getListSlot().size() != 0)
+			{
+				for(MentorSlot slot : slotList.getListSlot())
 				{
-					search.add(new Search(user.getId(),user.getFirstName(),user.getLastName(),user.getYearOfExp(),user.getLinkedInUrl(),tech.getId(),tech.getTechnologyName(),skill.getId(),skill.getAvgRating(),skill.getToc(),skill.getPrerequisites(),skill.getFee(),slot.getId(),slot.getTimeFrom(),slot.getTimeTo()));
+					bool = this.training.checkSlot(slot.getId());
+					if(bool)
+					{
+						if(cnt==1)break;
+						
+						search.add(new SearchRequest(user.getId(),user.getFirstName(),user.getLastName(),user.getYearOfExp(),user.getLinkedInUrl(),tech.getId(),tech.getTechnologyName(),skill.getId(),skill.getAvgRating(),skill.getToc(),skill.getPrerequisites(),skill.getFee()));
+						cnt++;
+					}
 				}
 			}
 		}
 		
-		SearchList searchList = new SearchList(search,count);
+		SearchList searchList = new SearchList(search,mentorSlotList);
 		
 		return searchList;
 	}
 	
-	/* Exception handler */
-	
-	/*@ExceptionHandler
-	public ResponseEntity<ExceptionErrorResponse> handler(DataNotFoundException ex)
+	public SearchList searchByMentorTech(Integer mentorId,Integer techId)
 	{
-		ExceptionErrorResponse error = new ExceptionErrorResponse(ex.getMessage(),HttpStatus.NOT_FOUND.value(),System.currentTimeMillis());
+		List<SearchRequest> search = new LinkedList<SearchRequest>();
+		List<MentorSlot> mentorSlotList = new LinkedList<MentorSlot>();
 		
-		ResponseEntity<ExceptionErrorResponse> responseEntity = new ResponseEntity<ExceptionErrorResponse>(error,HttpStatus.NOT_FOUND);
+		MentorSkill skillList = this.mentorSkill.getSkillByMentorIdAndTechId(mentorId,techId);
 		
-		return responseEntity;
-	}*/
+		Technology tech = this.technology.getById(skillList.getTechnologyId());
+		User user = this.user.getById(skillList.getMentorId());
+		
+		search.add(new SearchRequest(user.getId(),user.getFirstName(),user.getLastName(),user.getYearOfExp(),user.getLinkedInUrl(),tech.getId(),tech.getTechnologyName(),skillList.getId(),skillList.getAvgRating(),skillList.getToc(),skillList.getPrerequisites(),skillList.getFee()));
+		
+		SlotList slotList = this.mentorSlot.getSearchByMentorId(skillList.getMentorId());
+		
+		for(MentorSlot slot : slotList.getListSlot())
+		{
+			boolean status = this.training.checkSlot(slot.getId());
+			
+			if(status)
+			{
+				mentorSlotList.add(new MentorSlot(slot.getId(),slot.getMentorId(),slot.getTimeFrom(),slot.getTimeTo(),slot.getActive()));
+			}
+		}
+		
+		SearchList searchList = new SearchList(search,mentorSlotList);
+		
+		return searchList;
+	}
 }

@@ -1,15 +1,19 @@
 package com.mentorondemand.controller;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,10 +22,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.mentorondemand.entity.MentorSkill;
 import com.mentorondemand.entity.NotificationData;
+import com.mentorondemand.entity.Technology;
 import com.mentorondemand.entity.Training;
 import com.mentorondemand.entity.TrainingData;
 import com.mentorondemand.entity.TrainingList;
 import com.mentorondemand.entity.User;
+import com.mentorondemand.entity.UserProfile;
 import com.mentorondemand.exception.GlobalException;
 import com.mentorondemand.facade.MentorSkillService;
 import com.mentorondemand.facade.MentorSlotService;
@@ -47,29 +53,25 @@ public class StudentController {
 	@Autowired
 	private MentorSkillService skillService;
 	
-	//logout
-	@RequestMapping("/logout")
-	public String logout(HttpServletRequest request)
-	{
-		HttpSession session = request.getSession();
-		session.invalidate();
-
-		return "redirect:/signin";
-	}
-	
 	//home search section
 	@RequestMapping("/home")
-	public String searchAll(Model model,HttpServletRequest request)
+	public String searchAll(Model model,Principal principal)
 	{
-		HttpSession session = request.getSession(false);
-		if(session.getAttribute("user") == null)
-		{
-			return "redirect:/student/logout";
-		}
-		User user = (User) session.getAttribute("user");
+		User user = this.userService.findByUsername(principal.getName());
 		model.addAttribute("roleId",user.getRoleId());
-		//model.addAttribute("userId",user.getId());
+		model.addAttribute("userId",user.getId());
+		model.addAttribute("firstName",user.getFirstName()+" "+user.getLastName());
 		
+		List<Integer> techSkillList = this.skillService.getAllUniqueSkill();
+		
+		List<Technology> technology = new ArrayList<>();
+		
+		for(Integer tId : techSkillList)
+		{
+			technology.add(this.techService.getById(tId));
+		}
+		
+		model.addAttribute("techList",technology);
 		model.addAttribute("search",this.search.searchAll().getSearchList());
 		
 		//notification bar
@@ -80,7 +82,7 @@ public class StudentController {
 		
 		for(Training training : notifyList.getTrainingList())
 		{
-			String userName = this.userService.getById(training.getUserId()).getFirstName();
+			String userName = this.userService.getById(training.getMentorId()).getFirstName();
 			String techName = this.techService.getById(training.getTechId()).getTechnologyName();
 			
 			String request1 = null;
@@ -103,32 +105,49 @@ public class StudentController {
     }
 	
 	@RequestMapping(value="/search",method=RequestMethod.GET)
-	public String searchById(Model model,@RequestParam("techId") String techId,HttpServletRequest request)
+	public String searchById(Model model,@RequestParam("techId") String techId,Principal principal)
 	{
-		HttpSession session = request.getSession(false);
-		if(session.getAttribute("user")==null)
-		{
-			return "redirect:/student/logout";
-		}
-		User user = (User) session.getAttribute("user");
+		User user = this.userService.findByUsername(principal.getName());
 		model.addAttribute("roleId",user.getRoleId());
+		model.addAttribute("userId",user.getId());
+		model.addAttribute("firstName",user.getFirstName()+" "+user.getLastName());
 		
+		List<Integer> techSkillList = this.skillService.getAllUniqueSkill();
+		
+		List<Technology> technology = new ArrayList<>();
+		
+		for(Integer tId : techSkillList)
+		{
+			technology.add(this.techService.getById(tId));
+		}
+		
+		model.addAttribute("techList",technology);
 		model.addAttribute("search",this.search.searchById(Integer.parseInt(techId)).getSearchList());
 
 		return "index";
     }
 	
 	//send proposal
-	@RequestMapping("/send-proposal/{mentorId}/{userId}/{slotId}/{techId}")
-	public String sendProposal(@PathVariable("mentorId") Integer mentorId,@PathVariable("userId") Integer userId,@PathVariable("slotId") Integer slotId,@PathVariable("techId") Integer techId,Model model,HttpServletRequest request)
+	@RequestMapping("/view-calendar/{mentorId}/{userId}/{techId}")
+	public String viewCalendar(@PathVariable("mentorId") Integer mentorId,@PathVariable("userId") Integer userId,@PathVariable("techId") Integer techId,Model model,Principal principal)
 	{
-		HttpSession session = request.getSession(false);
-		if(session.getAttribute("user")==null)
-		{
-			return "redirect:/student/logout";
-		}
-		User user = (User) session.getAttribute("user");
+		User user = this.userService.findByUsername(principal.getName());
 		model.addAttribute("roleId",user.getRoleId());
+		model.addAttribute("firstName",user.getFirstName()+" "+user.getLastName());
+		
+		model.addAttribute("search",this.search.searchByMentorTech(mentorId,techId).getSearchList());
+		model.addAttribute("mentorSlotList",this.search.searchByMentorTech(mentorId,techId).getMentorSlotList());
+		model.addAttribute("techId",techId);
+		
+		return "view-calendar";
+	}
+	
+	@RequestMapping("/send-proposal/{mentorId}/{userId}/{slotId}/{techId}")
+	public String sendProposal(@PathVariable("mentorId") Integer mentorId,@PathVariable("userId") Integer userId,@PathVariable("slotId") Integer slotId,@PathVariable("techId") Integer techId,Model model,Principal principal)
+	{
+		User user = this.userService.findByUsername(principal.getName());
+		model.addAttribute("roleId",user.getRoleId());
+		model.addAttribute("firstName",user.getFirstName()+" "+user.getLastName());
 		
 		Training training = new Training(null,mentorId,userId,slotId,techId,0,null,null,0.0,0.0,0,5,0,1);
 		
@@ -142,55 +161,50 @@ public class StudentController {
 	
 	//edit profile
 	@RequestMapping("/edit-profile")
-	public String editProfile(Model model,HttpServletRequest request)
+	public String editProfile(Model model,Principal principal)
 	{
-		HttpSession session = request.getSession(false);
-		if(session.getAttribute("user") == null)
-		{
-			return "redirect:/student/logout";
-		}
-		User user = (User) session.getAttribute("user");
+		User user = this.userService.findByUsername(principal.getName());
 		model.addAttribute("roleId",user.getRoleId());
+		model.addAttribute("firstName",user.getFirstName()+" "+user.getLastName());
 		
-		model.addAttribute("command",user);
+		model.addAttribute("users",user);
 		
 		return "user-edit-profile";
 	}
 	
 	@RequestMapping(value="/update-profile",method = RequestMethod.POST)
-	public String updateProfile(@ModelAttribute("user") User user,HttpServletRequest request,Model model)
+	public String updateProfile(@Valid @ModelAttribute("users") UserProfile user,BindingResult result,Model model,Principal principal)
 	{
-		HttpSession session = request.getSession(false);
-		if(session.getAttribute("user") == null)
-		{
-			return "redirect:/student/logout";
-		}
-		User user1 = (User) session.getAttribute("user");
+		User user1 = this.userService.findByUsername(principal.getName());
 		model.addAttribute("roleId",user1.getRoleId());
+		model.addAttribute("firstName",user1.getFirstName()+" "+user1.getLastName());
 		
-		boolean status = this.userService.editUser(user);
+		if(result.hasErrors())
+		{
+			return "user-edit-profile";
+		}
+		
+		User user2 = this.userService.getById(user.getId());
+		user2.setFirstName(user.getFirstName());
+		user2.setLastName(user.getLastName());
+		user2.setContact(user.getContact());
+		user2.setLinkedInUrl(user.getLinkedInUrl());
+		
+		boolean status = this.userService.editUser(user2);
 		
 		if(!status)
 			throw new GlobalException("Profile updation failed!");
-		
-		User user2 = this.userService.getById(user.getId());
-		request.getSession().removeAttribute("user");
-		request.getSession().setAttribute("user",user2);
 		
 		return "redirect:/student/edit-profile";
 	}
 	
 	//training section
 	@RequestMapping("/training")
-	public String training(Model model,HttpServletRequest request)
+	public String training(Model model,Principal principal)
 	{
-		HttpSession session = request.getSession(false);
-		if(session.getAttribute("user")==null)
-		{
-			return "redirect:/student/logout";
-		}
-		User user = (User) session.getAttribute("user");
+		User user = this.userService.findByUsername(principal.getName());
 		model.addAttribute("roleId",user.getRoleId());
+		model.addAttribute("firstName",user.getFirstName()+" "+user.getLastName());
 		
 		Integer userId = user.getId();
 		TrainingList list = this.trainingService.getTrainingByUserId(userId);
@@ -226,15 +240,11 @@ public class StudentController {
 	
 	//payment section
 	@RequestMapping("/pay/{trainingId}")
-	public String payment(@PathVariable("trainingId") Integer trainingId,Model model,HttpServletRequest request)
+	public String payment(@PathVariable("trainingId") Integer trainingId,Model model,Principal principal)
 	{
-		HttpSession session = request.getSession(false);
-		if(session.getAttribute("user")==null)
-		{
-			return "redirect:/student/logout";
-		}
-		User user = (User) session.getAttribute("user");
+		User user = this.userService.findByUsername(principal.getName());
 		model.addAttribute("roleId",user.getRoleId());
+		model.addAttribute("firstName",user.getFirstName()+" "+user.getLastName());
 		
 		Training training = this.trainingService.getById(trainingId);
 		MentorSkill skill = this.skillService.getSkillByMentorIdAndTechId(training.getMentorId(),training.getTechId());
@@ -248,15 +258,11 @@ public class StudentController {
 	}
 	
 	@RequestMapping(value = "/paypal",method = RequestMethod.POST)
-	public String paypal(@ModelAttribute("training") Training training,Model model,HttpServletRequest request)
+	public String paypal(@ModelAttribute("training") Training training,Model model,Principal principal)
 	{
-		HttpSession session = request.getSession(false);
-		if(session.getAttribute("user")==null)
-		{
-			return "redirect:/student/logout";
-		}
-		User user = (User) session.getAttribute("user");
+		User user = this.userService.findByUsername(principal.getName());
 		model.addAttribute("roleId",user.getRoleId());
+		model.addAttribute("firstName",user.getFirstName()+" "+user.getLastName());
 		
 		Training training1 = this.trainingService.getById(training.getId());
 		training1.setTotalFee(training.getTotalFee());
@@ -272,14 +278,28 @@ public class StudentController {
 	
 	//rating section
 	@RequestMapping(value = "/rating/{editId}/{rating}",method = RequestMethod.GET)
-	public String rating(@PathVariable("editId") Integer id,@PathVariable("rating") Integer rating)
+	public String rating(@PathVariable("editId") Integer id,@PathVariable("rating") Integer rating,Model model,Principal principal)
 	{
+		User user = this.userService.findByUsername(principal.getName());
+		model.addAttribute("roleId",user.getRoleId());
+		model.addAttribute("firstName",user.getFirstName()+" "+user.getLastName());
+		
 		Training training = this.trainingService.getById(id);
 		training.setRating(rating);
 		
 		boolean status = this.trainingService.update(training);
 		
-		if(!status)
+		int mentorId = this.trainingService.getById(id).getMentorId();
+		int techId = this.trainingService.getById(id).getTechId();
+		
+		double avgRating = this.trainingService.getAvgRatingByMentorIdTechId(mentorId,techId);
+		
+		MentorSkill skill = this.skillService.getSkillByMentorIdAndTechId(mentorId, techId);
+		skill.setAvgRating(avgRating);
+		
+		boolean status1 = this.skillService.update(skill);
+		
+		if(!status && !status1)
 			throw new GlobalException("Rating updation failed!");
 		
 		return "redirect:/student/training";
@@ -300,5 +320,13 @@ public class StudentController {
 		model.addAttribute("exception", ex);
 		
 		return "error";
+	}
+	
+	//trimmer intercept request
+	@InitBinder
+	public void interceptRequest(WebDataBinder binder)
+	{
+		StringTrimmerEditor trimmer = new StringTrimmerEditor(true);
+		binder.registerCustomEditor(String.class, trimmer);
 	}
 }

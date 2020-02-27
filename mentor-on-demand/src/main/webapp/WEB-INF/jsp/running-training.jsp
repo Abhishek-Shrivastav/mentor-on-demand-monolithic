@@ -35,10 +35,12 @@
 			</c:if>
 		</div>
 		<div class="main1">
-			<h2>Running Training</h2>
+			<h3 style="text-align:right; padding-right:80px; margin-bottom:0px">${firstName}</h3>
+			<h2 style="margin:0px;">Running Training</h2>
 			<div class="list">
+				<div class="item" style="overflow:scroll; height:315px;">
 					<table align="center" border="1" width="100%" cellpadding="2">
-						<tr>
+						<tr class="header-fix">
 							<th>ID</th>
 							<c:if test="${roleId == 1}">
 							<th>MENOTR-NAME</th>
@@ -57,9 +59,6 @@
 							<th>ACTION</th>
 							</c:if>
 						</tr>
-					</table>
-				<div class="item" style="overflow:scroll; height:315px;">
-					<table align="center" border="1" width="100%" cellpadding="2">
 						<c:if test="${not empty trainingList}">
 						<c:set var="i" value="0"/>
 						<c:forEach var="training" items="${trainingList}">
@@ -100,28 +99,9 @@
 						</c:if>
 						<c:if test="${empty trainingList}">
 							<tr>
-								<td colspan="12">Empty list</td>
+								<td colspan="12" style="text-align:center;">Empty list</td>
 							</tr>
 						</c:if>
-						<tr>
-							<th>ID</th>
-							<c:if test="${roleId == 1}">
-							<th>MENOTR-NAME</th>
-							</c:if>
-							<th>STUDENT-NAME</th>
-							<th>SLOT-TIME-FROM</th>
-							<th>SLOT-TIME-TO</th>
-							<th>TECHNOLOGY</th>
-							<th>PROGRESS</th>
-							<th>START-DATE</th>
-							<th>END-DATE</th>
-							<th>AMMOUNT-RECIVED</th>
-							<th>RATING</th>
-							<th>STATUS</th>
-							<c:if test="${roleId == 3}">
-							<th>ACTION</th>
-							</c:if>
-						</tr>
 					</table>
 				</div>
 			</div>

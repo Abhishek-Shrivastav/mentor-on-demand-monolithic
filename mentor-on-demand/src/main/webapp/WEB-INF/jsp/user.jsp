@@ -27,10 +27,12 @@
 			</c:if>
 		</div>
 		<div class="main">
-			<h2>User Table</h2>
+			<h3 style="text-align:right; padding-right:80px; margin-bottom:0px">${firstName}</h3>
+			<h2 style="margin:0px;">User Table</h2>
 			<div class="list">
+				<div class="item" style="overflow:scroll; height:315px;">
 					<table align="center" border="1" width="100%" cellpadding="2">
-						<tr>
+						<tr class="header-fix">
 							<th>ID</th>
 							<th>FIRST-NAME</th>
 							<th>LAST-NAME</th>
@@ -40,9 +42,6 @@
 							<th>EXPIRENCE</th>
 							<th>ACTIVE</th>
 						</tr>
-					</table>
-				<div class="item" style="overflow:scroll; height:315px;">
-					<table align="center" border="1" width="100%" cellpadding="2">
 						<c:if test="${not empty userList}">
 						<c:set var="i" value="0"/>
 						<c:forEach var="user" items="${userList}">
@@ -73,19 +72,9 @@
 						</c:if>
 						<c:if test="${empty userList}">
 							<tr>
-								<td colspan="8">Empty list</td>
+								<td colspan="8" style="text-align:center;">Empty list</td>
 							</tr>
 						</c:if>
-						<tr>
-							<th>ID</th>
-							<th>FIRST-NAME</th>
-							<th>LAST-NAME</th>
-							<th>CONTACT</th>
-							<th>ROLE</th>
-							<th>LINKED-IN</th>
-							<th>EXPIRENCE</th>
-							<th>ACTIVE</th>
-						</tr>
 					</table>
 				</div>
 			</div>

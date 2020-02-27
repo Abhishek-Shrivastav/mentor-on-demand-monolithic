@@ -22,7 +22,7 @@ public class PaymentDaoImpl implements PaymentDao {
 	@Override
 	public List<Payment> getAllPayment() {
 
-		List<Payment> list = this.entity.createQuery("From Payment").getResultList();
+		List<Payment> list = this.entity.createQuery("From Payment Order By trainingId,dateTime").getResultList();
 		
 		return list;
 	}

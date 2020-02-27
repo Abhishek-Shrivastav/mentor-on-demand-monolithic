@@ -1,54 +1,22 @@
 package com.mentorondemand.entity;
 
-import java.util.List;
+import java.util.Collection;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+public class UserDto {
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-@Entity
-@Table(name = "user")
-public class User {
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
 	private Integer id;
-	@Column(name = "username")
 	private String userName;
-	@Column(name = "password")
 	private String password;
-	@JsonIgnore
-	@Transient
 	private String confirmPassword;
-	@Column(name = "first_name")
 	private String firstName;
-	@Column(name = "last_name")
 	private String lastName;
-	@Column(name = "contact")
 	private String contact;
-	@Column(name = "role_id")
-	private Integer roleId;
-	@Column(name = "linkedin_url")
 	private String linkedInUrl;
-	@Column(name = "year_of_exp")
 	private Integer yearOfExp;
-	@Column(name = "isactive")
 	private Integer isActive;
-	@ManyToMany
-	@JoinTable(name="user_role", joinColumns = @JoinColumn(name="user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name="role_id", referencedColumnName = "id"))
-	private List<Role> role;
+	private Collection<? extends Integer> roles;
 	
-	public User() {}
+	public UserDto() {}
 
 	public Integer getId() {
 		return id;
@@ -106,13 +74,13 @@ public class User {
 		this.contact = contact;
 	}
 
-	public Integer getRoleId() {
+	/*public Integer getRoleId() {
 		return roleId;
 	}
 
 	public void setRoleId(Integer roleId) {
 		this.roleId = roleId;
-	}
+	}*/
 
 	public String getLinkedInUrl() {
 		return linkedInUrl;
@@ -138,18 +106,18 @@ public class User {
 		this.isActive = isActive;
 	}
 
-	public List<Role> getRole() {
-		return role;
+	public Collection<? extends Integer> getRoles() {
+		return roles;
 	}
 
-	public void setRole(List<Role> list) {
-		this.role = list;
+	public void setRoles(Collection<? extends Integer> roles) {
+		this.roles = roles;
 	}
 
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", userName=" + userName + ", password=" + password + ", firstName=" + firstName
-				+ ", lastName=" + lastName + ", contact=" + contact + ", roleId=" + roleId + ", linkedInUrl="
+				+ ", lastName=" + lastName + ", contact=" + contact + ", linkedInUrl="
 				+ linkedInUrl + ", yearOfExp=" + yearOfExp + ", isActive=" + isActive + "]";
 	}
 }

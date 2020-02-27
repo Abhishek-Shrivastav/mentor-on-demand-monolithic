@@ -1,7 +1,5 @@
 package com.mentorondemand.facade;
 
-import java.util.List;
-
 import com.mentorondemand.entity.Training;
 import com.mentorondemand.entity.TrainingList;
 
@@ -26,4 +24,7 @@ public interface TrainingService {
 	boolean progressUpgrade(Training training);
 	TrainingList getPaymentInstallment();
 	boolean paymentMethod(Integer trainingId,Double amountRecived,Integer installmentStatus);
+	TrainingList getRunningTraining(Integer id);
+	Double getAvgRatingByMentorIdTechId(Integer mentorId,Integer techId);
+	TrainingList getTrainingBySlotId(Integer slotId);
 }

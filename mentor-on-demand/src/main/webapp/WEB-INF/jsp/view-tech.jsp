@@ -41,19 +41,18 @@
 			<jsp:include page="left-sidebar-menu4.jsp"/>
 		</div>
 		<div class="main1">
-			<h2>Technology</h2>
+			<h3 style="text-align:right; padding-right:80px; margin-bottom:0px">${firstName}</h3>
+			<h2 style="margin:0px;">Technology</h2>
 			<div class="list">
+				<div class="item" style="overflow:scroll; height:315px;">
 					<table align="center" border="1" width="100%" cellpadding="2">
-						<tr>
+						<tr class="header-fix">
 							<th>ID</th>
 							<th>TECHNOLOGY</th>
 							<th>ACTIVE</th>
 							<th>EDIT</th>
 							<th>DELETE</th>
 						</tr>
-					</table>
-				<div class="item" style="overflow:scroll; height:315px;">
-					<table align="center" border="1" width="100%" cellpadding="2">
 						<c:if test="${not empty techList}">
 						<c:set var="i" value="0"/>
 						<c:forEach var="tech" items="${techList}">
@@ -73,16 +72,9 @@
 						</c:if>
 						<c:if test="${empty techList}">
 							<tr>
-								<td colspan="5">Empty list</td>
+								<td colspan="5" style="text-align:center;">Empty list</td>
 							</tr>
 						</c:if>
-						<tr>
-							<th>ID</th>
-							<th>TECHNOLOGY</th>
-							<th>ACTIVE</th>
-							<th>EDIT</th>
-							<th>DELETE</th>
-						</tr>
 					</table>
 				</div>
 			</div>

@@ -41,10 +41,12 @@
 			<jsp:include page="left-sidebar-menu1.jsp"/>
 		</div>
 		<div class="main1">
-			<h2>Mentor Skill List</h2>
+			<h3 style="text-align:right; padding-right:80px; margin-bottom:0px">${firstName}</h3>
+			<h2 style="margin:0px;">Mentor Skill List</h2>
 			<div class="list">
+				<div class="item" style="overflow:scroll; height:315px;">
 					<table align="center" border="1" width="100%" cellpadding="2">
-						<tr>
+						<tr class="header-fix">
 							<th>ID</th>
 							<th>TECHNOLOGY</th>
 							<th>Rating</th>
@@ -55,9 +57,6 @@
 							<th>DELETE</th>
 							
 						</tr>
-					</table>
-				<div class="item" style="overflow:scroll; height:315px;">
-					<table align="center" border="1" width="100%" cellpadding="2">
 						<c:if test="${not empty skillList}">
 						<c:set var="i" value="0"/>
 						<c:forEach var="skill" items="${skillList}">
@@ -75,20 +74,9 @@
 						</c:if>
 						<c:if test="${empty skillList}">
 							<tr>
-								<td colspan="6">Empty list</td>
+								<td colspan="6" style="text-align:center;">Empty list</td>
 							</tr>
 						</c:if>
-						<tr>
-							<th>ID</th>
-							<th>TECHNOLOGY</th>
-							<th>Rating</th>
-							<th>TOC</th>
-							<th>PREREQUISITE</th>
-							<th>FEE</th>
-							<th>EDIT</th>
-							<th>DELETE</th>
-							
-						</tr>
 					</table>
 				</div>
 			</div>

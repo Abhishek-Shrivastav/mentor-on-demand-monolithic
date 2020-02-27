@@ -1,12 +1,11 @@
 package com.mentorondemand.entity;
 
-public class Search {
+public class SearchRequest {
 
 	//mentor details
 	private Integer mentorId;
 	private String mentorFirstName;
 	private String mentorLastName;
-	//@JsonIgnore	// to ignore 
 	private Integer yearExp;
 	private String linkedInUrl;
 	//mentor skill
@@ -17,35 +16,10 @@ public class Search {
 	private String toc;
 	private String prerequisites;
 	private Double fee;
-	//mentor slot
-	private Integer slotId;
-	private String timeFrom;
-	private String timeTo;
 	
-	public Search() {}
+	public SearchRequest() {}
 	
-	public Search(Integer mentorId, String mentorFirstName, String mentorLastName, Integer yearExp, String linkedInUrl,
-			Integer techId, String techName, Integer skillId, Double avgRating, String toc, String prerequisites, Double fee,
-			Integer slotId, String timeFrom, String timeTo) {
-
-		this.mentorId = mentorId;
-		this.mentorFirstName = mentorFirstName;
-		this.mentorLastName = mentorLastName;
-		this.yearExp = yearExp;
-		this.linkedInUrl = linkedInUrl;
-		this.techId = techId;
-		this.techName = techName;
-		this.skillId = skillId;
-		this.avgRating = avgRating;
-		this.toc = toc;
-		this.prerequisites = prerequisites;
-		this.fee = fee;
-		this.slotId = slotId;
-		this.timeFrom = timeFrom;
-		this.timeTo = timeTo;
-	}
-	
-	public Search(Integer mentorId, String mentorFirstName, String mentorLastName, Integer yearExp, String linkedInUrl,
+	public SearchRequest(Integer mentorId, String mentorFirstName, String mentorLastName, Integer yearExp, String linkedInUrl,
 			Integer techId, String techName, Integer skillId, Double avgRating, String toc, String prerequisites,
 			Double fee) {
 		super();
@@ -159,36 +133,11 @@ public class Search {
 		this.fee = fee;
 	}
 
-	public Integer getSlotId() {
-		return slotId;
-	}
-
-	public void setSlotId(Integer slotId) {
-		this.slotId = slotId;
-	}
-
-	public String getTimeFrom() {
-		return timeFrom;
-	}
-
-	public void setTimeFrom(String timeFrom) {
-		this.timeFrom = timeFrom;
-	}
-
-	public String getTimeTo() {
-		return timeTo;
-	}
-
-	public void setTimeTo(String timeTo) {
-		this.timeTo = timeTo;
-	}
-
 	@Override
 	public String toString() {
 		return "Search [mentorId=" + mentorId + ", mentorFirstName=" + mentorFirstName + ", mentorLastName="
 				+ mentorLastName + ", yearExp=" + yearExp + ", linkedInUrl=" + linkedInUrl + ", techId=" + techId
 				+ ", techName=" + techName + ", skillId=" + skillId + ", toc=" + toc + ", prerequisites="
-				+ prerequisites + ", fee=" + fee + ", slotId=" + slotId + ", timeFrom=" + timeFrom + ", timeTo="
-				+ timeTo + "]";
+				+ prerequisites + ", fee=" + fee + "]";
 	}
 }

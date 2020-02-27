@@ -25,4 +25,7 @@ public interface TrainingDao {
 	boolean progressUpgrade(Training training);
 	List<Training> getPaymentInstallment();
 	boolean paymentMethod(Integer trainingId,Double amountRecived,Integer installmentStatus);
+	List<Training> getRunningTraining(Integer id);
+	Double getAvgRatingByMentorIdTechId(Integer mentorId,Integer techId);
+	List<Training> getTrainingBySlotId(Integer slotId);
 }

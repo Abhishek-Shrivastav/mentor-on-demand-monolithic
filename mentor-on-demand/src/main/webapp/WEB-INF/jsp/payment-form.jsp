@@ -37,7 +37,8 @@
 			<jsp:include page="admin-menu.jsp"/>
 		</div>
 		<div class="main">
-			<h2>Payment Form</h2>
+			<h3 style="text-align:right; padding-right:80px; margin-bottom:0px">${firstName}</h3>
+			<h2 style="margin:0px;">Payment Form</h2>
 			<div class="list">
 				<div class="item">
 					<table align="center" width="40%" cellpadding="2">
@@ -82,7 +83,7 @@
 							<td><form:checkbox path="paymentStatus" value="1" required="true"/> : All payment inputs are valid.</td>
 						</tr>
 						<tr>
-							<td colspan="2"><input type="submit" name="add" value="Insert" /></td>
+							<td colspan="2" style="text-align:center;"><input type="submit" name="add" value="Insert" /></td>
 						</tr>
 						</form:form>
 					</table>

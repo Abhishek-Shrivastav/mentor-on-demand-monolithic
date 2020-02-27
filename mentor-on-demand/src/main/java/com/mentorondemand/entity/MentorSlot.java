@@ -1,7 +1,5 @@
 package com.mentorondemand.entity;
 
-import java.sql.Time;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -20,13 +18,24 @@ public class MentorSlot {
 	@Column(name = "mentor_id")
 	private Integer mentorId;
 	@Column(name = "time_from")
-	private Time timeFrom;
+	//private Time timeFrom;
+	private String timeFrom;
 	@Column(name = "time_to")
-	private Time timeTo;
+	//private Time timeTo;
+	private String timeTo;
 	@Column(name = "isactive")
 	private Integer active;
-	
+
 	public MentorSlot() {}
+
+	public MentorSlot(Integer id, Integer mentorId, String timeFrom, String timeTo, Integer active) {
+		super();
+		this.id = id;
+		this.mentorId = mentorId;
+		this.timeFrom = timeFrom;
+		this.timeTo = timeTo;
+		this.active = active;
+	}
 
 	public Integer getId() {
 		return id;
@@ -44,20 +53,20 @@ public class MentorSlot {
 		this.mentorId = mentorId;
 	}
 
-	public Time getTimeFrom() {
+	public String getTimeFrom() {
 		return timeFrom;
 	}
 
-	public void setTimeFrom(Time timeFrom) {
+	public void setTimeFrom(String timeFrom) {
 		
 		this.timeFrom = timeFrom;
 	}
 
-	public Time getTimeTo() {
+	public String getTimeTo() {
 		return timeTo;
 	}
 
-	public void setTimeTo(Time timeTo) {
+	public void setTimeTo(String timeTo) {
 		
 		this.timeTo = timeTo;
 	}

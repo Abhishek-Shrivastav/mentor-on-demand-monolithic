@@ -86,7 +86,7 @@ public class MentorSkillDaoImpl implements MentorSkillDao {
 		
 		return mentorSkill;
 	}
-	
+
 	@Override
 	public MentorSkill getSkillByMentorIdAndTechId(Integer mentorId,Integer techId) {
 		
@@ -105,5 +105,13 @@ public class MentorSkillDaoImpl implements MentorSkillDao {
 		this.entity.flush();
 		
 		return true;
+	}
+
+	@Override
+	public List<Integer> getAllUniqueSkill() {
+		
+		List<Integer> mentorSkill = this.entity.createQuery("Select Distinct technologyId From MentorSkill").getResultList();
+		
+		return mentorSkill;
 	}
 }

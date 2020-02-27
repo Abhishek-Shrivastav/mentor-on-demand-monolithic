@@ -15,4 +15,7 @@ public interface UserDao {
 	User getUserLoginDetail(String username,String password);
 	boolean getActiveStatus(Integer userId,Integer activate);
 	boolean editUser(User user);
+	boolean findUserByUsername(String username);
+	User findByUsername(String username);
+	User findByContact(String contact);
 }

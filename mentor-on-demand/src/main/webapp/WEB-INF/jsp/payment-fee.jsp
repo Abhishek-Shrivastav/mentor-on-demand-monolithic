@@ -38,13 +38,14 @@
 				<jsp:include page="admin-menu.jsp"/>
 			</c:if>
 			<c:if test="${roleId == 2}">
-				<jsp:include page="left-sidebar-menu7.jsp"/>
+				<jsp:include page="student-menu.jsp"/>
 			</c:if>
 			<c:if test="${roleId == 3}">
 				<jsp:include page="mentor-menu.jsp"/>
 			</c:if>
 		</div>
 		<div class="main">
+			<h3><span style="float:right; padding-right:80px;">${firstName}</span></h3>
 			<h2>Payment Form</h2>
 			<div class="list">
 				<div class="item">
@@ -63,7 +64,7 @@
 							<td><form:input  path="totalFee" readonly="true" value="${trainingFee}" required="true"/></td>
 						</tr>
 						<tr>
-							<td colspan="2"><input type="submit" name="add" value="Pay" /></td>
+							<td colspan="2" style="text-align:center;"><input type="submit" name="add" value="Pay" /></td>
 						</tr>
 						</form:form>
 					</table>

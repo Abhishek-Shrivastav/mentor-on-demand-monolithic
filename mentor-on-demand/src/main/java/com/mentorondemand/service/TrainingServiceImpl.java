@@ -126,4 +126,28 @@ public class TrainingServiceImpl implements TrainingService {
 		
 		return this.dao.paymentMethod(trainingId, amountRecived, installmentStatus);
 	}
+
+	@Override
+	public TrainingList getRunningTraining(Integer id) {
+		
+		TrainingList list = new TrainingList(this.dao.getRunningTraining(id));
+		
+		return list;
+	}
+
+	@Override
+	public Double getAvgRatingByMentorIdTechId(Integer mentorId, Integer techId) {
+		
+		Double avgRating = this.dao.getAvgRatingByMentorIdTechId(mentorId, techId);
+		
+		return avgRating;
+	}
+
+	@Override
+	public TrainingList getTrainingBySlotId(Integer slotId) {
+		
+		TrainingList list = new TrainingList(this.dao.getTrainingBySlotId(slotId));
+		
+		return list;
+	}
 }

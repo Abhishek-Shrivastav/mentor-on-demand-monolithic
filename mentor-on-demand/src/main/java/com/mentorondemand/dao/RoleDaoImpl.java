@@ -58,4 +58,13 @@ public class RoleDaoImpl implements RoleDao {
 		
 		return true;
 	}
+
+	@Override
+	public List<Role> getById(Integer ids) {
+		
+		@SuppressWarnings("unchecked")
+		List<Role> list = this.entity.createQuery("From Role Where id = "+ids).getResultList();
+		
+		return list;
+	}
 }

@@ -27,10 +27,12 @@
 			<jsp:include page="left-sidebar-menu5.jsp"/>
 		</div>
 		<div class="main1">
-			<h2>Complete Payment Panel</h2>
+			<h3 style="text-align:right; padding-right:80px; margin-bottom:0px">${firstName}</h3>
+			<h2 style="margin:0px;">Complete Payment Panel</h2>
 			<div class="list">
+				<div class="item" style="overflow:scroll; height:315px;">
 					<table align="center" border="1" width="100%" cellpadding="2">
-						<tr>
+						<tr class="header-fix">
 							<th>ID</th>
 							<th>TRAINING-ID</th>
 							<th>TOTAL-PAID-AMOUNT</th>
@@ -38,9 +40,6 @@
 							<th>PAYMENT-DATE</th>
 							<th>STATUS</th>
 						</tr>
-					</table>
-				<div class="item" style="overflow:scroll; height:315px;">
-					<table align="center" border="1" width="100%" cellpadding="2">
 						<c:if test="${not empty payList}">
 						<c:set var="i" value="0"/>
 						<c:forEach var="pay" items="${payList}">
@@ -61,17 +60,9 @@
 						</c:if>
 						<c:if test="${empty payList}">
 							<tr>
-								<td colspan="8">Empty list</td>
+								<td colspan="8" style="text-align:center;">Empty list</td>
 							</tr>
 						</c:if>
-						<tr>
-							<th>ID</th>
-							<th>TRAINING-ID</th>
-							<th>TOTAL-PAID-AMOUNT</th>
-							<th>INSTALLMENT-STATUS</th>
-							<th>PAYMENT-DATE</th>
-							<th>STATUS</th>
-						</tr>
 					</table>
 				</div>
 			</div>

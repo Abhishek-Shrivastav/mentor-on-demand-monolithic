@@ -1,10 +1,13 @@
 package com.mentorondemand.entity;
 
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -17,6 +20,8 @@ public class Role {
 	private Integer id;
 	@Column(name = "role_name")
 	private String roleName;
+	@ManyToMany(mappedBy = "role")
+    private Set<User> users;
 	
 	public Role() {}
 
@@ -34,6 +39,14 @@ public class Role {
 
 	public void setRoleName(String roleName) {
 		this.roleName = roleName;
+	}
+
+	public Set<User> getUsers() {
+		return users;
+	}
+
+	public void setUsers(Set<User> users) {
+		this.users = users;
 	}
 
 	@Override

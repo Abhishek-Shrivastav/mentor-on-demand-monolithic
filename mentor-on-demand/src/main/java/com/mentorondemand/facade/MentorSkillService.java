@@ -1,5 +1,7 @@
 package com.mentorondemand.facade;
 
+import java.util.List;
+
 import com.mentorondemand.entity.MentorSkill;
 import com.mentorondemand.entity.SkillList;
 
@@ -14,4 +16,5 @@ public interface MentorSkillService {
 	SkillList getMentorSkillById(Integer id);
 	MentorSkill getSkillByMentorIdAndTechId(Integer mentorId,Integer techId);
 	Boolean updateAvgSkill(Integer mentorId,Integer techId,Double avgRating);
+	List<Integer> getAllUniqueSkill();
 }

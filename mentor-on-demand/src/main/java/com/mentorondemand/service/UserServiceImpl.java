@@ -1,20 +1,28 @@
 package com.mentorondemand.service;
 
+import java.util.Collection;
+
 import javax.persistence.NoResultException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.mentorondemand.dao.UserDaoImpl;
 import com.mentorondemand.entity.User;
 import com.mentorondemand.entity.UserList;
+import com.mentorondemand.facade.RoleDao;
+import com.mentorondemand.facade.UserDao;
 import com.mentorondemand.facade.UserService;
 
 @Service
 public class UserServiceImpl implements UserService {
 
 	@Autowired
-	private UserDaoImpl dao;
+	private UserDao dao;
+	@Autowired
+	private RoleDao roleDao;
+	@Autowired
+	private BCryptPasswordEncoder bCryptPasswordEncoder;
 	
 	@Override
 	public UserList getAll() {
@@ -31,7 +39,13 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public boolean save(User user) {
+	public boolean save(User user,Collection<? extends Integer> set)
+	{
+		Integer ids = set.iterator().next();
+		
+		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+		user.setConfirmPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+		user.setRole(this.roleDao.getById(ids));
 		
 		return this.dao.saveUser(user);
 	}
@@ -72,5 +86,23 @@ public class UserServiceImpl implements UserService {
 	public boolean editUser(User user) {
 		
 		return this.dao.editUser(user);
+	}
+
+	@Override
+	public boolean findUserByUsername(String username) {
+
+		return this.dao.findUserByUsername(username);
+	}
+
+	@Override
+	public User findByUsername(String username)
+	{
+		return this.dao.findByUsername(username);
+	}
+
+	@Override
+	public User findByContact(String contact) {
+		
+		return this.dao.findByContact(contact);
 	}
 }

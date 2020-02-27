@@ -1,4 +1,4 @@
-package com.mentorondemand.entity;
+/*package com.mentorondemand.entity;
 
 public class Login {
 
@@ -33,4 +33,4 @@ public class Login {
 	public String toString() {
 		return "Login [username=" + username + ", password=" + password + "]";
 	}
-}
+}*/

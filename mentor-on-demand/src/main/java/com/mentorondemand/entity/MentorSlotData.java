@@ -1,19 +1,17 @@
 package com.mentorondemand.entity;
 
-import java.sql.Time;
-
 public class MentorSlotData {
 
 	private Integer id;
 	private Integer mentorId;
-	private Time timeFrom;
-	private Time timeTo;
+	private String timeFrom;
+	private String timeTo;
 	private String status;
 	private String active;
 	
 	public MentorSlotData() {}
 
-	public MentorSlotData(Integer id, Integer mentorId, Time timeFrom, Time timeTo, String status, String active) {
+	public MentorSlotData(Integer id, Integer mentorId, String timeFrom, String timeTo, String status, String active) {
 		super();
 		this.id = id;
 		this.mentorId = mentorId;
@@ -39,20 +37,20 @@ public class MentorSlotData {
 		this.mentorId = mentorId;
 	}
 
-	public Time getTimeFrom() {
+	public String getTimeFrom() {
 		return timeFrom;
 	}
 
-	public void setTimeFrom(Time timeFrom) {
+	public void setTimeFrom(String timeFrom) {
 		
 		this.timeFrom = timeFrom;
 	}
 
-	public Time getTimeTo() {
+	public String getTimeTo() {
 		return timeTo;
 	}
 
-	public void setTimeTo(Time timeTo) {
+	public void setTimeTo(String timeTo) {
 		
 		this.timeTo = timeTo;
 	}

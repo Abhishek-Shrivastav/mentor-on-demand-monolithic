@@ -51,7 +51,8 @@
 			<jsp:include page="left-sidebar-menu.jsp"/>
 		</div>
 		<div class="main1">
-			<h2>Date Allotment</h2>
+			<h3 style="text-align:right; padding-right:80px; margin-bottom:0px">${firstName}</h3>
+			<h2 style="margin:0px;">Date Allotment</h2>
 			<div class="list">
 				<div class="item">
 					<table align="center" width="40%" cellpadding="2">

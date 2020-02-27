@@ -1,6 +1,5 @@
 package com.mentorondemand.dao;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -72,7 +71,6 @@ public class TrainingDaoImpl implements TrainingDao {
 	public List<Training> getByTrainingId(Integer mentorId) {
 		
 		@SuppressWarnings("unchecked")
-		//List<Training> list = this.entity.createQuery("From Training Where mentorId="+mentorId+" And (request=3 Or request=4)").getResultList();
 		List<Training> list = this.entity.createQuery("From Training Where mentorId="+mentorId).getResultList();
 		
 		return list;
@@ -80,6 +78,7 @@ public class TrainingDaoImpl implements TrainingDao {
 	
 	public List<Training> getTrainingByUserId(Integer userId) {
 		
+		@SuppressWarnings("unchecked")
 		List<Training> list = this.entity.createQuery("From Training Where userId="+userId).getResultList();
 		
 		return list;
@@ -99,12 +98,11 @@ public class TrainingDaoImpl implements TrainingDao {
 	@SuppressWarnings("unchecked")
 	public List<Training> getActionTraining(Integer id) {
 		
-		//List<Training> list = this.entity.createQuery("From Training Where request="+id).getResultList();
 		List<Training> list = this.entity.createQuery("From Training Where userId="+id+" And (request=1 Or request=2)").getResultList();
 		
 		return list;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public List<Training> getActionTrainingByMentorId(Integer id,Integer request) {
 		
@@ -207,5 +205,31 @@ public class TrainingDaoImpl implements TrainingDao {
 		this.entity.flush();
 		
 		return true;
+	}
+
+	@Override
+	public List<Training> getRunningTraining(Integer id) {
+		
+		@SuppressWarnings("unchecked")
+		List<Training> list = this.entity.createQuery("From Training Where request="+id).getResultList();
+		
+		return list;
+	}
+
+	@Override
+	public Double getAvgRatingByMentorIdTechId(Integer mentorId, Integer techId) {
+		
+		Double avgRating = (Double) this.entity.createQuery("Select Avg(rating) From Training Where mentorId="+mentorId+" And techId="+techId).getSingleResult();
+		
+		return avgRating;
+	}
+
+	@Override
+	public List<Training> getTrainingBySlotId(Integer slotId) {
+		
+		@SuppressWarnings("unchecked")
+		List<Training> training = this.entity.createQuery("From Training Where slotId="+slotId+" And isActive="+1+" And (request!=1 And request!=4)").getResultList();
+		
+		return training;
 	}
 }
